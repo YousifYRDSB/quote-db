@@ -129,6 +129,7 @@ export default function Index() {
                   </Text>
                   <Text variant="bodyMd" as="p">
                     This embedded app template uses{" "}
+                    TEST
                     <Link
                       url="https://shopify.dev/docs/apps/tools/app-bridge"
                       target="_blank"
