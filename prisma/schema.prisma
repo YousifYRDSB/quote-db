@@ -30,3 +30,25 @@ model Session {
   collaborator  Boolean?  @default(false)
   emailVerified Boolean?  @default(false)
 }
+
+model Quote {
+  id           String    @id @default(cuid())
+  createdAt    DateTime  @default(now())
+  updatedAt    DateTime  @updatedAt
+  shopId       String
+  productId    String
+  variantId    String
+  title        String
+  image        String?
+  metadata     String?
+  message      String?   // Optional message from the user
+  status       String    @default("pending") // Status of the quote, e.g., pending, approved, rejected
+}
+
+model Settings {
+  id           String    @id @default(cuid())
+  shopId       String    @unique
+  adminEmail   String
+  createdAt    DateTime  @default(now())
+  updatedAt    DateTime  @updatedAt
+}
