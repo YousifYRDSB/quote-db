@@ -1,14 +1,15 @@
 import db from "../db.server";
+import type { Quote } from '@prisma/client'
 import invariant from 'tiny-invariant';
 
 // Create or update settings
 export async function updateSettings(shopId: string, adminEmail: string) {
-  const existingSettings = await db.Settings.findUnique({
+  const existingSettings = await db.settings.findUnique({
     where: { shopId },
   });
 
   if (existingSettings) {
-    return await db.Settings.update({
+    return await db.settings.update({
       where: { shopId },
       data: { adminEmail },
     });
@@ -49,8 +50,8 @@ export async function createQuote({
       variantId,
       title,
       image,
-      metadata,
-      message,
+      metadata: metadata ? JSON.stringify(metadata) : "",
+      message: message ? message : "",
       status: 'pending',
     },
   });

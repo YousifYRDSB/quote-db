@@ -3,7 +3,7 @@
 client_id = "44d6a08fb5ac341d0f69b6eb210323a4"
 name = "quote-app"
 handle = "quote-app-11"
-application_url = "https://holders-muscle-described-looked.trycloudflare.com"
+application_url = "https://strap-cc-veteran-travel.trycloudflare.com"
 embedded = true
 
 [build]
@@ -16,9 +16,9 @@ scopes = "write_products"
 
 [auth]
 redirect_urls = [
-  "https://holders-muscle-described-looked.trycloudflare.com/auth/callback",
-  "https://holders-muscle-described-looked.trycloudflare.com/auth/shopify/callback",
-  "https://holders-muscle-described-looked.trycloudflare.com/api/auth/callback"
+  "https://strap-cc-veteran-travel.trycloudflare.com/auth/callback",
+  "https://strap-cc-veteran-travel.trycloudflare.com/auth/shopify/callback",
+  "https://strap-cc-veteran-travel.trycloudflare.com/api/auth/callback"
 ]
 
 [webhooks]
