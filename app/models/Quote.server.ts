@@ -1,16 +1,14 @@
-import { PrismaClient } from '@prisma/client';
+import db from "../db.server";
 import invariant from 'tiny-invariant';
-
-const db = new PrismaClient();
 
 // Create or update settings
 export async function updateSettings(shopId: string, adminEmail: string) {
-  const existingSettings = await db.settings.findUnique({
+  const existingSettings = await db.Settings.findUnique({
     where: { shopId },
   });
 
   if (existingSettings) {
-    return await db.settings.update({
+    return await db.Settings.update({
       where: { shopId },
       data: { adminEmail },
     });
