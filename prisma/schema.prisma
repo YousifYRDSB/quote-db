@@ -39,10 +39,11 @@ model Quote {
   productId    String
   variantId    String
   title        String
+  name         String
+  email        String
   image        String?
   metadata     String?
   message      String?   // Optional message from the user
-  status       String    @default("pending") // Status of the quote, e.g., pending, approved, rejected
 }
 
 model Settings {

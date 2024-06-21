@@ -1,7 +1,5 @@
 import { useEffect } from "react";
-import type { ActionFunctionArgs, LoaderFunctionArgs } from "@remix-run/node";
-import { json } from "@remix-run/node";
-import { useActionData, useNavigation, useSubmit } from "@remix-run/react";
+import { redirect, useNavigate, useNavigation } from "@remix-run/react";
 import {
   Page,
   Layout,
@@ -15,109 +13,21 @@ import {
   InlineStack,
 } from "@shopify/polaris";
 import { TitleBar, useAppBridge } from "@shopify/app-bridge-react";
-import { authenticate } from "../shopify.server";
-
-export const loader = async ({ request }: LoaderFunctionArgs) => {
-  await authenticate.admin(request);
-
-  return null;
-};
-
-export const action = async ({ request }: ActionFunctionArgs) => {
-  const { admin } = await authenticate.admin(request);
-  const color = ["Red", "Orange", "Yellow", "Green"][
-    Math.floor(Math.random() * 4)
-  ];
-  const response = await admin.graphql(
-    `#graphql
-      mutation populateProduct($input: ProductInput!) {
-        productCreate(input: $input) {
-          product {
-            id
-            title
-            handle
-            status
-            variants(first: 10) {
-              edges {
-                node {
-                  id
-                  price
-                  barcode
-                  createdAt
-                }
-              }
-            }
-          }
-        }
-      }`,
-    {
-      variables: {
-        input: {
-          title: `${color} Snowboard`,
-        },
-      },
-    },
-  );
-  const responseJson = await response.json();
-
-  const variantId =
-    responseJson.data!.productCreate!.product!.variants.edges[0]!.node!.id!;
-  const variantResponse = await admin.graphql(
-    `#graphql
-      mutation shopifyRemixTemplateUpdateVariant($input: ProductVariantInput!) {
-        productVariantUpdate(input: $input) {
-          productVariant {
-            id
-            price
-            barcode
-            createdAt
-          }
-        }
-      }`,
-    {
-      variables: {
-        input: {
-          id: variantId,
-          price: Math.random() * 100,
-        },
-      },
-    },
-  );
-
-  const variantResponseJson = await variantResponse.json();
-
-  return json({
-    product: responseJson!.data!.productCreate!.product,
-    variant: variantResponseJson!.data!.productVariantUpdate!.productVariant,
-  });
-};
 
 export default function Index() {
   const nav = useNavigation();
-  const actionData = useActionData<typeof action>();
-  const submit = useSubmit();
+  const isLoading = nav.state === "loading" || nav.state === "submitting";
   const shopify = useAppBridge();
-  const isLoading =
-    ["loading", "submitting"].includes(nav.state) && nav.formMethod === "POST";
-  const productId = actionData?.product?.id.replace(
-    "gid://shopify/Product/",
-    "",
-  );
 
   useEffect(() => {
-    if (productId) {
-      shopify.toast.show("Product created");
-    }
-  }, [productId, shopify]);
-  const generateProduct = () => submit({}, { replace: true, method: "POST" });
+    shopify.toast.show("Welcome to the Quote Management App!");
+  }, [shopify]);
+
+  const navigate = useNavigate()
 
   return (
     <Page>
-      <TitleBar title="Remix app template">
-        <button variant="primary" onClick={generateProduct}>
-          Generate a product
-        </button>
-      </TitleBar>
+      <TitleBar title="Welcome to the Quote Management App" />
       <BlockStack gap="500">
         <Layout>
           <Layout.Section>
@@ -125,105 +35,104 @@ export default function Index() {
               <BlockStack gap="500">
                 <BlockStack gap="200">
                   <Text as="h2" variant="headingMd">
-                    Congrats on creating a new Shopify app 🎉
+                    Welcome to the Quote Management App 🎉
                   </Text>
                   <Text variant="bodyMd" as="p">
-                    This embedded app template uses{" "}
-                    TEST
-                    <Link
-                      url="https://shopify.dev/docs/apps/tools/app-bridge"
-                      target="_blank"
-                      removeUnderline
-                    >
-                      App Bridge
-                    </Link>{" "}
-                    interface examples like an{" "}
-                    <Link url="/app/additional" removeUnderline>
-                      additional page in the app nav
-                    </Link>
-                    , as well as an{" "}
-                    <Link
-                      url="https://shopify.dev/docs/api/admin-graphql"
-                      target="_blank"
-                      removeUnderline
-                    >
-                      Admin GraphQL
-                    </Link>{" "}
-                    mutation demo, to provide a starting point for app
-                    development.
+                    This app is designed to help you manage quotes effectively. You can create, view, and manage quotes seamlessly within your Shopify admin interface.
                   </Text>
                 </BlockStack>
                 <BlockStack gap="200">
                   <Text as="h3" variant="headingMd">
-                    Get started with products
+                    Tech Stack
+                  </Text>
+                  <List>
+                    <List.Item>
+                      <Link
+                        url="https://remix.run"
+                        target="_blank"
+                        removeUnderline
+                      >
+                        Remix
+                      </Link>{" "}
+                      - The framework used for building this app.
+                    </List.Item>
+                    <List.Item>
+                      <Link
+                        url="https://www.prisma.io/"
+                        target="_blank"
+                        removeUnderline
+                      >
+                        Prisma
+                      </Link>{" "}
+                      - Used for database management.
+                    </List.Item>
+                    <List.Item>
+                      <Link
+                        url="https://polaris.shopify.com"
+                        target="_blank"
+                        removeUnderline
+                      >
+                        Polaris
+                      </Link>{" "}
+                      - For the app's UI components.
+                    </List.Item>
+                    <List.Item>
+                      <Link
+                        url="https://shopify.dev/docs/apps/tools/app-bridge"
+                        target="_blank"
+                        removeUnderline
+                      >
+                        App Bridge
+                      </Link>{" "}
+                      - For embedding the app into Shopify.
+                    </List.Item>
+                    <List.Item>
+                      <Link
+                        url="https://shopify.dev/docs/api/admin-graphql"
+                        target="_blank"
+                        removeUnderline
+                      >
+                        Shopify Admin GraphQL API
+                      </Link>{" "}
+                      - For interacting with Shopify's data.
+                    </List.Item>
+                  </List>
+                </BlockStack>
+                <BlockStack gap="200">
+                  <Text as="h3" variant="headingMd">
+                    Purpose of the App
                   </Text>
                   <Text as="p" variant="bodyMd">
-                    Generate a product with GraphQL and get the JSON output for
-                    that product. Learn more about the{" "}
-                    <Link
-                      url="https://shopify.dev/docs/api/admin-graphql/latest/mutations/productCreate"
-                      target="_blank"
-                      removeUnderline
-                    >
-                      productCreate
-                    </Link>{" "}
-                    mutation in our API references.
+                    The Quote Management App allows you to handle customer quotes efficiently. You can add a custom contact form to your storefront, enabling customers to request quotes directly. All submitted quotes are managed in the quotes page, making it easy to keep track of and respond to requests.
                   </Text>
                 </BlockStack>
+                <BlockStack gap="200">
+                  <Text as="h3" variant="headingMd">
+                    Instructions for Usage
+                  </Text>
+                  <List>
+                    <List.Item>
+                      <Text as="span" variant="bodyMd" fontWeight="bold">
+                        Managing Quotes:
+                      </Text>{" "}
+                      Navigate to the Quotes page in the app to view, create, and manage quotes.
+                    </List.Item>
+                    <List.Item>
+                      <Text as="span" variant="bodyMd" fontWeight="bold">
+                        Adding the App Block:
+                      </Text>{" "}
+                      Add the "RFQ Contact Form" block to your Shopify storefront. This block allows customers to fill out a form to request a quote.
+                    </List.Item>
+                  </List>
+                </BlockStack>
                 <InlineStack gap="300">
-                  <Button loading={isLoading} onClick={generateProduct}>
-                    Generate a product
+                  <Button variant="primary" onClick={() => navigate("/app/quotes")}>
+                    Go to Quotes Page
                   </Button>
-                  {actionData?.product && (
-                    <Button
-                      url={`shopify:admin/products/${productId}`}
-                      target="_blank"
-                      variant="plain"
-                    >
-                      View product
-                    </Button>
-                  )}
+                  <Button variant="plain" url="https://shopify.dev/docs/apps/getting-started/build-app-example" target="_blank">
+                    Learn more
+                  </Button>
                 </InlineStack>
-                {actionData?.product && (
-                  <>
-                    <Text as="h3" variant="headingMd">
-                      {" "}
-                      productCreate mutation
-                    </Text>
-                    <Box
-                      padding="400"
-                      background="bg-surface-active"
-                      borderWidth="025"
-                      borderRadius="200"
-                      borderColor="border"
-                      overflowX="scroll"
-                    >
-                      <pre style={{ margin: 0 }}>
-                        <code>
-                          {JSON.stringify(actionData.product, null, 2)}
-                        </code>
-                      </pre>
-                    </Box>
-                    <Text as="h3" variant="headingMd">
-                      {" "}
-                      productVariantUpdate mutation
-                    </Text>
-                    <Box
-                      padding="400"
-                      background="bg-surface-active"
-                      borderWidth="025"
-                      borderRadius="200"
-                      borderColor="border"
-                      overflowX="scroll"
-                    >
-                      <pre style={{ margin: 0 }}>
-                        <code>
-                          {JSON.stringify(actionData.variant, null, 2)}
-                        </code>
-                      </pre>
-                    </Box>
-                  </>
-                )}
               </BlockStack>
             </Card>
           </Layout.Section>
@@ -232,101 +141,58 @@ export default function Index() {
               <Card>
                 <BlockStack gap="200">
                   <Text as="h2" variant="headingMd">
-                    App template specs
+                    Resources
                   </Text>
-                  <BlockStack gap="200">
-                    <InlineStack align="space-between">
-                      <Text as="span" variant="bodyMd">
-                        Framework
-                      </Text>
+                  <List>
+                    <List.Item>
                       <Link
-                        url="https://remix.run"
+                        url="https://remix.run/docs"
                         target="_blank"
                         removeUnderline
                       >
-                        Remix
+                        Remix Documentation
                       </Link>
-                    </InlineStack>
-                    <InlineStack align="space-between">
-                      <Text as="span" variant="bodyMd">
-                        Database
-                      </Text>
+                    </List.Item>
+                    <List.Item>
                       <Link
-                        url="https://www.prisma.io/"
+                        url="https://www.prisma.io/docs"
                         target="_blank"
                         removeUnderline
                       >
-                        Prisma
+                        Prisma Documentation
                       </Link>
-                    </InlineStack>
-                    <InlineStack align="space-between">
-                      <Text as="span" variant="bodyMd">
-                        Interface
-                      </Text>
-                      <span>
-                        <Link
-                          url="https://polaris.shopify.com"
-                          target="_blank"
-                          removeUnderline
-                        >
-                          Polaris
-                        </Link>
-                        {", "}
-                        <Link
-                          url="https://shopify.dev/docs/apps/tools/app-bridge"
-                          target="_blank"
-                          removeUnderline
-                        >
-                          App Bridge
-                        </Link>
-                      </span>
-                    </InlineStack>
-                    <InlineStack align="space-between">
-                      <Text as="span" variant="bodyMd">
-                        API
-                      </Text>
+                    </List.Item>
+                    <List.Item>
+                      <Link
+                        url="https://polaris.shopify.com/documentation"
+                        target="_blank"
+                        removeUnderline
+                      >
+                        Polaris Documentation
+                      </Link>
+                    </List.Item>
+                    <List.Item>
+                      <Link
+                        url="https://shopify.dev/docs/apps/tools/app-bridge"
+                        target="_blank"
+                        removeUnderline
+                      >
+                        App Bridge Documentation
+                      </Link>
+                    </List.Item>
+                    <List.Item>
                       <Link
                         url="https://shopify.dev/docs/api/admin-graphql"
                         target="_blank"
                         removeUnderline
                       >
-                        GraphQL API
-                      </Link>
-                    </InlineStack>
-                  </BlockStack>
-                </BlockStack>
-              </Card>
-              <Card>
-                <BlockStack gap="200">
-                  <Text as="h2" variant="headingMd">
-                    Next steps
-                  </Text>
-                  <List>
-                    <List.Item>
-                      Build an{" "}
-                      <Link
-                        url="https://shopify.dev/docs/apps/getting-started/build-app-example"
-                        target="_blank"
-                        removeUnderline
-                      >
-                        {" "}
-                        example app
-                      </Link>{" "}
-                      to get started
-                    </List.Item>
-                    <List.Item>
-                      Explore Shopify’s API with{" "}
-                      <Link
-                        url="https://shopify.dev/docs/apps/tools/graphiql-admin-api"
-                        target="_blank"
-                        removeUnderline
-                      >
-                        GraphiQL
+                        Shopify Admin GraphQL API Documentation
                       </Link>
                     </List.Item>
                   </List>
                 </BlockStack>
               </Card>
+             
             </BlockStack>
           </Layout.Section>
         </Layout>

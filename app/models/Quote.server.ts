@@ -1,5 +1,7 @@
 import db from "../db.server";
 import type { Quote } from '@prisma/client'
+import exp from "constants";
+import { emit } from "process";
 import invariant from 'tiny-invariant';
 
 // Create or update settings
@@ -26,6 +28,8 @@ export async function createQuote({
   productId,
   variantId,
   title,
+  name,
+  email,
   image,
   metadata,
   message,
@@ -34,14 +38,18 @@ export async function createQuote({
   productId: string;
   variantId: string;
   title: string;
+  name: string;
+  email: string;
   image?: string;
   metadata?: string;
   message?: string;
 }) {
+  console.log(shopId)
   invariant(shopId, 'Shop ID is required');
   invariant(productId, 'Product ID is required');
   invariant(variantId, 'Variant ID is required');
   invariant(title, 'Title is required');
+  invariant(email, 'Email is required');
 
   return await db.quote.create({
     data: {
@@ -49,10 +57,11 @@ export async function createQuote({
       productId,
       variantId,
       title,
+      name,
+      email,
       image,
       metadata: metadata ? JSON.stringify(metadata) : "",
       message: message ? message : "",
-      status: 'pending',
     },
   });
 }
@@ -65,15 +74,7 @@ export async function updateQuote(id: string, data: Partial<Quote>) {
   });
 }
 
-// Update quote status
-export async function updateQuoteStatus(id: string, status: string) {
-  invariant(status, 'Status is required');
 
-  return await db.quote.update({
-    where: { id },
-    data: { status },
-  });
-}
 
 // Validate quote data
 export function validateQuote(data: {
@@ -110,4 +111,9 @@ export async function getQuotes(shopId: string) {
     where: { shopId },
     orderBy: { createdAt: 'desc' },
   });
+}
+
+
+export async function deleteQuote(id: string) {
+  return await db.quote.delete({ where: { id } });
 }
