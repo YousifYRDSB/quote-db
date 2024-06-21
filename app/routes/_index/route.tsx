@@ -19,6 +19,7 @@ export const loader = async ({ request }: LoaderFunctionArgs) => {
 export default function App() {
   const { showForm } = useLoaderData<typeof loader>();
 
+  //into page to install app, not important
   return (
     <div className={styles.index}>
       <div className={styles.content}>

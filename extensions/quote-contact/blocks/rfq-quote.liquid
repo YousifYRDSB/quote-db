@@ -6,21 +6,26 @@
 <!-- Modal structure -->
 <div id="contactModal" style="display:none; position: fixed; top: 50%; left: 50%; transform: translate(-50%, -50%); width: 80%; max-width: 400px; background: white; padding: 20px; box-shadow: 0 5px 15px rgba(0,0,0,0.3); border-radius: 10px; z-index: 1000;">
   <form id="contactForm" style="display: flex; flex-direction: column; gap: 10px;">
+    <!-- Name input field -->
     <label for="name" style="font-weight: bold;">Name:</label>
     <input type="text" id="name" name="name" required style="padding: 10px; border: 1px solid #ccc; border-radius: 5px;">
     
+    <!-- Email input field -->
     <label for="email" style="font-weight: bold;">Email:</label>
     <input type="email" id="email" name="email" required style="padding: 10px; border: 1px solid #ccc; border-radius: 5px;">
     
+    <!-- Message textarea -->
     <label for="message" style="font-weight: bold;">Message:</label>
     <textarea id="message" name="message" required style="padding: 10px; border: 1px solid #ccc; border-radius: 5px;"></textarea>
     
+    <!-- Hidden fields for product and shop details -->
     <input type="hidden" id="productId" name="productId" value="{{ product.id }}">
     <input type="hidden" id="variantId" name="variantId" value="{{ product.variants.first.id }}">
     <input type="hidden" id="title" name="title" value="{{ product.title }}">
     <input type="hidden" id="shopId" name="shopId" value="{{ shop.permanent_domain }}">
     <input type="hidden" id="image" name="image" value="{{ product.featured_image | image_url: width: 450 }}">
 
+    <!-- Submit button -->
     <button type="button" id="submitForm" style="background-color: {{ block.settings.colour }}; color: white; padding: 10px 20px; border: none; border-radius: 5px; cursor: pointer;">Send</button>
   </form>
   <button id="closeModal" style="margin-top: 10px; background: none; border: none; color: {{ block.settings.colour }}; cursor: pointer;">Close</button>
@@ -30,28 +35,34 @@
 <div id="modalBackdrop" style="display:none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.5); z-index: 999;"></div>
 
 <script>
+  // Event listener to open the modal
   document.getElementById('contactButton').addEventListener('click', function() {
+    // Show the modal and backdrop
     document.getElementById('contactModal').style.display = 'block';
     document.getElementById('modalBackdrop').style.display = 'block';
   });
 
+  // Event listener to close the modal
   document.getElementById('closeModal').addEventListener('click', function() {
     document.getElementById('contactModal').style.display = 'none';
     document.getElementById('modalBackdrop').style.display = 'none';
   });
 
+  // Event listener to close the modal when clicking on the backdrop
   document.getElementById('modalBackdrop').addEventListener('click', function() {
     document.getElementById('contactModal').style.display = 'none';
     document.getElementById('modalBackdrop').style.display = 'none';
   });
 
+  // Event listener to handle form submission
   document.getElementById('submitForm').addEventListener('click', async function() {
+    // Get the form and convert it to FormData
     const form = document.getElementById('contactForm');
     const formData = new FormData(form);
     const data = Object.fromEntries(formData.entries());
-    console.log(data)
 
     try {
+      // Send a post request with the relevant data with a shopify proxy, that forwards to the app app/quotes endpoint
       const response = await fetch('/apps/add-quote', {
         method: 'POST',
         body: JSON.stringify(data),
@@ -60,7 +71,9 @@
         },
       });
 
+      // Handle the server response
       if (response.ok) {
+        // Hide the modal and backdrop
         document.getElementById('contactModal').style.display = 'none';
         document.getElementById('modalBackdrop').style.display = 'none';
         alert('Quote request sent successfully.');

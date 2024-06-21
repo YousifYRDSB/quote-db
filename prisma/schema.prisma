@@ -31,6 +31,7 @@ model Session {
   emailVerified Boolean?  @default(false)
 }
 
+//database model used for each quote, contains contact info and product info
 model Quote {
   id           String    @id @default(cuid())
   createdAt    DateTime  @default(now())
@@ -46,6 +47,7 @@ model Quote {
   message      String?   // Optional message from the user
 }
 
+//settings database model, (!!UNUSED!)
 model Settings {
   id           String    @id @default(cuid())
   shopId       String    @unique

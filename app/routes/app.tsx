@@ -19,6 +19,7 @@ export const loader = async ({ request }: LoaderFunctionArgs) => {
 export default function App() {
   const { apiKey } = useLoaderData<typeof loader>();
 
+  //routing for the sidebar, added a quote page; this is the main page for the app
   return (
     <AppProvider isEmbeddedApp apiKey={apiKey}>
       <NavMenu>

@@ -15,10 +15,10 @@ import {
 import { TitleBar, useAppBridge } from "@shopify/app-bridge-react";
 
 export default function Index() {
-  const nav = useNavigation();
-  const isLoading = nav.state === "loading" || nav.state === "submitting";
+
   const shopify = useAppBridge();
 
+  //useeffect hook to display a welcome toast
   useEffect(() => {
     shopify.toast.show("Welcome to the Quote Management App!");
   }, [shopify]);
@@ -26,6 +26,7 @@ export default function Index() {
   const navigate = useNavigate()
 
   return (
+    //index page with basic info
     <Page>
       <TitleBar title="Welcome to the Quote Management App" />
       <BlockStack gap="500">

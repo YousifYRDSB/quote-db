@@ -1,6 +1,7 @@
 import { json, ActionFunction } from "@remix-run/node";
 import { createQuote } from "../models/Quote.server";
 
+//Server component, this route acts as an endpoint that creates a quote when pinged with a POST request, and the relevant data.
 export const action: ActionFunction = async ({ request }) => {
   if (request.headers.get("Content-Type") === "application/json") {
     const { name, email, message, productId, variantId, title, image, shopId } = await request.json();
