@@ -22,14 +22,14 @@ export default function App() {
   return (
     <div className={styles.index}>
       <div className={styles.content}>
-        <h1 className={styles.heading}>A short heading about [your app]</h1>
+        <h1 className={styles.heading}>Quote app</h1>
         <p className={styles.text}>
-          A tagline about [your app] that describes your value proposition.
+          allows the store admin, as well as users on the frontend store to contribute to a database for RFQs
         </p>
         {showForm && (
           <Form className={styles.form} method="post" action="/auth/login">
             <label className={styles.label}>
-              <span>Shop domain</span>
+              <span>Enter your shopify store domain to install the app</span>
               <input className={styles.input} type="text" name="shop" />
               <span>e.g: my-shop-domain.myshopify.com</span>
             </label>

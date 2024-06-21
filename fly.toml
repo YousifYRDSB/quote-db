@@ -1,0 +1,29 @@
+# fly.toml app configuration file generated for quote-db on 2024-06-20T23:43:33-04:00
+#
+# See https://fly.io/docs/reference/configuration/ for information about how to use this file.
+#
+
+app = 'quote-db'
+primary_region = 'ewr'
+
+[build]
+
+[env]
+  PORT = "3000"
+  SHOPIFY_APP_URL = "https://quote-db.fly.dev"
+  SHOPIFY_API_KEY = "44d6a08fb5ac341d0f69b6eb210323a4"
+  SHOPIFY_API_SECRET = "5a5640517d17c787a7b5db8670c67965"
+  SCOPES = "write_products"
+
+[http_service]
+  internal_port = 3000
+  force_https = true
+  auto_stop_machines = true
+  auto_start_machines = true
+  min_machines_running = 0
+  processes = ['app']
+
+[[vm]]
+  memory = '1gb'
+  cpu_kind = 'shared'
+  cpus = 1

@@ -308,6 +308,7 @@ export default function QuotesPage() {
           </Form>
         </Modal.Section>
       </Modal>
+      <p>add an app block to your product page in the storefront customizer to test the quote contact form!</p>
     </Page>
   );
 }
